@@ -169,14 +169,14 @@ export default {
       // console.log(this.area);
     },
   },
-  /* watch:{
+  watch:{
     activeIndex(newVal,oldVal) {
       this.iactiveIndex = newVal;
     },
     iactiveIndex(newVal, oldVal) {
         this.$emit('update', newVal);
     }
-  } */
+  }
 };
 </script>
 

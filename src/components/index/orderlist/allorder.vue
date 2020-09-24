@@ -572,14 +572,6 @@ export default {
 .active {
   border: none;
 }
-// .van-tabs__wrap {
-//   position: relative;
-//   top: 150px;
-//   z-index: 999;
-// }
-// .van-tab {
-//   margin-top: 50px;
-// }
 .allorder {
   margin-top: 46px;
 }

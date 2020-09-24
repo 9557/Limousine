@@ -2,7 +2,12 @@
   <div class="owncenter">
     <div class="name">
       <div class="headphoto">
-        <van-image round width="62px" height="62px" src="https://img.yzcdn.cn/vant/cat.jpeg" />
+        <van-image
+          round
+          width="62px"
+          height="62px"
+          src="https://img.yzcdn.cn/vant/cat.jpeg"
+        />
       </div>
       <div class="headname">
         <h3>这是一个微信名称</h3>
@@ -11,7 +16,7 @@
     </div>
     <div class="conlist">
       <ul class="optionlist">
-        <li class="optionitem">
+        <li class="optionitem" @click="showAgreement">
           <span class="left-icon icon-doc"></span>
           <van-icon name="arrow" class="right-icon"></van-icon>
           <span class="button-text">用户协议</span>
@@ -29,22 +34,38 @@
       </ul>
     </div>
     <div class="btn">
-      <van-button type="primary" color="#67CDC9" @click="next()">申请成为代驾司机</van-button>
+      <van-button type="primary" color="#67CDC9" @click="next()"
+        >申请成为代驾司机</van-button
+      >
     </div>
   </div>
 </template>
 
 <script>
+import { API_PROTOCOL_ID } from "../../../api/api";
 export default {
   data() {
-    return {};
+    return {
+      id: 1,
+      agreement:"",
+    };
   },
   components: {},
-  methods:{
-    next:function(){
-      this.$router.replace('/examine/first');
-    }
-  }
+  methods: {
+    next: function () {
+      this.$router.replace("/examine/first");
+    },
+    showAgreement() {
+      console.log(1);
+    },
+    async searchsome(options) {
+      let { id } = options;
+      let data = await API_PROTOCOL_ID();
+      // console.log(data);
+      this.agreement = data.data.context;
+      console.log(this.agreement);
+    },
+  },
 };
 </script>
 
@@ -150,9 +171,9 @@ export default {
       }
     }
   }
-  .van-button{
-      width: 100%;
-      margin-top: 50px;
+  .van-button {
+    width: 100%;
+    margin-top: 50px;
   }
 }
 </style>

@@ -57,7 +57,9 @@ export default {
     };
   },
   components: {},
-  methods: {},
+  methods: {
+  
+  },
   watch: {
     $route: {
       handler(val, oldval) {
