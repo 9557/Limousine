@@ -1,70 +1,47 @@
 <template>
-  <!-- 报名第一步 -->
-  <div class="first">
-    <van-cell
-      title="报名城市"
-      v-model="carmodel"
-      cancel-button-text
-      :style="{ height: '50px' }"
-      is-link
-      @click="showPopup"
-    ></van-cell>
-    <van-popup v-model="show" position="bottom" :style="{ height: '50%' }">
-      <van-area
-        ref="area"
-        value="110000"
-        title="请选择地区"
-        :area-list="areaList"
-        @change="onChange"
-        @confirm="onAreaConfirm()"
-        @cancel="onCancel()"
-        :columns-num="2"
-        :columns-placeholder="['请选择', '请选择']"
-      />
-    </van-popup>
-    <div class="minput">
-      <span>报名地点</span>
-      <input v-model="Registration" type="text" placeholder="请输入报名地点" />
-    </div>
-    <van-cell
-      title="居住地"
-      v-model="areamodel"
-      is-link
-      @click="showPopup1"
-      :style="{ height: '50px' }"
-    ></van-cell>
-    <van-popup v-model="show1" position="bottom" :style="{ height: '50%' }">
-      <van-area
-        ref="area"
-        value="110000"
-        title="请选择居住地点"
-        :columns-num="2"
-        :area-list="areaList"
-        @change="onChange1"
-        @confirm="show1 = false"
-        @cancel="show1 = false"
-        :columns-placeholder="['请选择','请选择','请选择']"
-      />
-    </van-popup>
-    <div class="minput">
-      <span>居住地点</span>
-      <input v-model="live" type="text" placeholder="请输入居住地点" />
-    </div>
-    <!-- 下一步须知 -->
-    <div class="next">
-      <van-checkbox v-model="checked" shape="square">
-        <span>阅读并同意四维代驾司机加盟须知</span>
-      </van-checkbox>
-      <van-button v-if="checked" type="primary" color="#67CDC9" size="large" @click="next()">下一步</van-button>
-      <van-button v-else type="primary" color="#67CDC9" size="large" disabled>下一步</van-button>
-    </div>
+<!-- 报名第一步 -->
+<div class="first">
+  <van-cell title="报名城市" v-model="carmodel" cancel-button-text :style="{ height: '50px' }" is-link @click="showPopup"></van-cell>
+  <van-popup v-model="show" position="bottom" :style="{ height: '50%' }">
+    <van-area ref="area" value="110000" title="请选择地区" :area-list="areaList" @change="onChange" @confirm="onAreaConfirm()" @cancel="onCancel()" :columns-num="3" :columns-placeholder="['请选择']" />
+  </van-popup>
+  <div class="minput">
+    <span>报名地点</span>
+    <input v-model="Registration" type="text" placeholder="请输入报名地点" />
   </div>
+  <van-cell title="居住地" v-model="areamodel" is-link @click="showPopup1" :style="{ height: '50px' }"></van-cell>
+  <van-popup v-model="show1" position="bottom" :style="{ height: '50%' }">
+    <van-area ref="area" value="110000" title="请选择居住地点" :columns-num="3" :area-list="areaList" @change="onChange1" @confirm="show1 = false" @cancel="show1 = false" :columns-placeholder="['请选择']" />
+  </van-popup>
+  <div class="minput">
+    <span>居住地点</span>
+    <input v-model="live" type="text" placeholder="请输入居住地点" />
+  </div>
+  <!-- 下一步须知 -->
+  <div class="next">
+    <van-checkbox v-model="checked" shape="square">
+      <span>阅读并同意四维代驾司机加盟须知</span>
+    </van-checkbox>
+    <van-button v-if="checked" type="primary" color="#67CDC9" size="large" @click="next(carmodel, areamodel, Registration, live)">下一步</van-button>
+    <van-button v-else type="primary" color="#67CDC9" size="large" disabled>下一步</van-button>
+  </div>
+</div>
 </template>
+
 <script>
-import { Form } from "vant";
+import {
+  Form,
+  Notify
+} from "vant";
 import areaList from "../../assets/js/area";
-import { API_AREA_ALL, API_PROTOCOL_ID } from "../../api/api";
-import { delay } from "../../assets/js/utils";
+import {
+  API_AREA_ALL,
+  API_PROTOCOL_ID,
+  API_DRIVERSIGN_INSET
+} from "../../api/api";
+import {
+  delay
+} from "../../assets/js/utils";
 import area from "../../assets/js/area";
 export default {
   data() {
@@ -146,8 +123,36 @@ export default {
       }
       this.areamodel = areaName;
     },
-    next: function () {
-      this.$router.replace("/examine/second");
+    next(carmodel, areamodel, Registration, live) {
+      const all = {
+        carmodel: carmodel,
+        Registration: Registration,
+        areamodel: areamodel,
+        live: live
+      };
+      if (carmodel === "请选择") {
+        Notify("未选择报名城市，请选择");
+      } else if (Registration === "") {
+        Notify("请填写具体报名地点");
+      } else if (areamodel === "请选择") {
+        Notify("未选择居住地，请选择");
+      } else if (live === "") {
+        Notify("请填写详细居住地点");
+      } else {
+        this.$router.replace("/examine/second");
+        API_DRIVERSIGN_INSET({
+          signupprovince: carmodel[0],
+          signupcity: carmodel[1],
+          signuparea: carmodel[2],
+          signupplace: Registration,
+          addressprovince: areamodel[0],
+          addresscityid: areamodel[1],
+          addresscity: areamodel[2],
+          detailaddress: live
+        })
+        sessionStorage.setItem("Info", JSON.stringify(all));
+        console.log(all);
+      }
     },
     onCancel() {
       this.show = false;
@@ -162,45 +167,54 @@ export default {
     },
     // 请求方法
     async searchsome(options) {
-      let { Registration, live } = options;
+      let {
+        Registration,
+        live
+      } = options;
       let data = await API_AREA_ALL();
       // console.log(data);
       this.area = data.data;
       // console.log(this.area);
     },
   },
-  watch:{
-    activeIndex(newVal,oldVal) {
+  watch: {
+    activeIndex(newVal, oldVal) {
       this.iactiveIndex = newVal;
     },
     iactiveIndex(newVal, oldVal) {
-        this.$emit('update', newVal);
-    }
-  }
+      this.$emit("update", newVal);
+    },
+  },
 };
 </script>
 
-<style scoped lang="less">
+<style lang="less" scoped>
 .content {
   padding: 16px 16px 160px;
 }
+
 .first {
   padding: 0 10px;
   line-height: 30px;
   font-size: 15px;
+
   .van-cell__title {
     overflow: hidden;
     line-height: 30px;
-    > span {
+
+    >span {
       float: left;
     }
   }
+
   .van-cell__value {
     line-height: 30px;
   }
+
   .van-icon {
     line-height: 30px;
   }
+
   .minput {
     width: 90%;
     height: 50px;
@@ -208,24 +222,29 @@ export default {
     line-height: 50px;
     border-bottom: 1px solid #eee;
     overflow: hidden;
-    > span {
+
+    >span {
       text-align: left;
       font-size: 15px;
       float: left;
     }
-    > input {
+
+    >input {
       height: 47px;
       border: none;
       text-align: right;
       float: right;
     }
   }
+
   .next {
     margin-top: 158px;
+
     .van-checkbox {
       font-size: 13px;
       margin-left: 7px;
     }
+
     .van-button {
       margin-top: 12px;
       width: 345px;

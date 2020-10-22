@@ -1,97 +1,78 @@
 <template>
-  <div class="license">
-    <!-- 驾驶证照片 -->
-    <p>驾驶证照片</p>
-    <div class="image">
-      <div class="uploadInfo">
-        <div class="cell">
-          <!-- <van-uploader :after-read="afterRead" accept="image/*" multiple/>
+<div class="license">
+  <!-- 驾驶证照片 -->
+  <p>驾驶证照片</p>
+  <div class="image">
+    <div class="uploadInfo">
+      <div class="cell">
+        <!-- <van-uploader :after-read="afterRead" accept="image/*" multiple/>
           <img class="head-img" src="" ref="goodsImg"/>-->
-          <div class="idCardbox" @click.once.prevent="show2 = true">
-            <div>
-              <van-uploader
-                preview-size="100px"
-                :after-read="afterReada"
-                :before-delete="deletea"
-                v-model="fileData.fileLista"
-                multiple
-                :max-count="1"
-              />
-              <span>+</span>
-              <p>上传驾驶证正面</p>
-            </div>
-            <div>
-              <van-uploader
-                preview-size="100px"
-                :after-read="afterReadb"
-                :before-delete="deleteb"
-                v-model="fileData.fileListb"
-                multiple
-                :max-count="1"
-              />
-              <span>+</span>
-              <p>上传驾驶证反面</p>
-            </div>
+        <div class="idCardbox" @click.once.prevent="show2 = true">
+          <div>
+            <van-uploader preview-size="100px" :after-read="afterReada" :before-delete="deletea" v-model="fileData1.fileLista" multiple :max-count="1" />
+            <span>+</span>
+            <p>上传驾驶证正面</p>
+          </div>
+          <div>
+            <van-uploader preview-size="100px" :after-read="afterReadb" :before-delete="deleteb" v-model="fileData1.fileListb" multiple :max-count="1" />
+            <span>+</span>
+            <p>上传驾驶证反面</p>
           </div>
         </div>
       </div>
     </div>
-    <!-- 驾驶证档案编号 -->
-    <div class="minput">
-      <span>驾驶证档案编号</span>
-      <input v-model="Registration" type="text" placeholder="请输入编号" />
-    </div>
-    <!-- 准驾车型 -->
-    <div class="minput">
-      <span>准驾车型</span>
-      <input v-model="allow" type="text" placeholder="请输入车型" />
-    </div>
-    <!-- 初领驾驶证日期 -->
-    <van-cell title="初领驾驶证日期" :value="date" is-link @click="show = true" v-model="datetimer"></van-cell>
-    <van-calendar
-      v-model="show"
-      :show-confirm="false"
-      color="#67CDC9"
-      first-day-of-week="1"
-      @confirm="onConfirm"
-      :max-date="maxDate"
-      :min-date="minDate"
-    />
-    <div class="next">
-      <van-button type="primary" color="#67CDC9" size="large" @click="next">下一步</van-button>
-    </div>
+  </div>
+  <!-- 驾驶证档案编号 -->
+  <div class="minput">
+    <span>驾驶证档案编号</span>
+    <input v-model="Registration1" type="text" placeholder="请输入编号" />
+  </div>
+  <!-- 准驾车型 -->
+  <div class="minput">
+    <span>准驾车型</span>
+    <input v-model="allow" type="text" placeholder="请输入车型" />
+  </div>
+  <!-- 初领驾驶证日期 -->
+  <van-cell title="初领驾驶证日期" :value="date" is-link @click="show = true" v-model="datetimer"></van-cell>
+  <van-calendar v-model="show" :show-confirm="false" color="#67CDC9" first-day-of-week="1" @confirm="onConfirm" :max-date="maxDate" :min-date="minDate" />
+  <div class="next">
+    <van-button type="primary" color="#67CDC9" size="large" @click="next(Registration1, allow, datetimer, fileData1)">下一步</van-button>
+  </div>
 
-    <!-- 证件拍摄需知 显示隐藏遮罩层 -->
-    <div class="xu">
-      <!-- <van-button type="primary" text="显示遮罩层" @click="show2 = true" /> -->
-      <van-overlay :show="show2" @click="show2 = false">
-        <div class="wrapper" @click.stop>
-          <div class="info">
-            <div class="top">
-              <img src="../../assets/images/zy1.png" alt />
-            </div>
-            <div class="button">
-              <van-button type="default" @click="show2=false">知道了</van-button>
-            </div>
+  <!-- 证件拍摄需知 显示隐藏遮罩层 -->
+  <div class="xu">
+    <!-- <van-button type="primary" text="显示遮罩层" @click="show2 = true" /> -->
+    <van-overlay :show="show2">
+      <div class="wrapper" @click.stop>
+        <div class="info">
+          <div class="top">
+            <img src="../../assets/images/zy1.png" alt />
+          </div>
+          <div class="button">
+            <van-button type="default" @click="showcertificates">知道了</van-button>
           </div>
         </div>
-      </van-overlay>
-    </div>
+      </div>
+    </van-overlay>
   </div>
+</div>
 </template>
 
 <script>
+import {
+  Notify
+} from "vant";
 export default {
   data() {
     return {
-      fileData: {
+      fileData1: {
         fileLista: [],
         fileListb: [],
       },
       isloading: false,
       isfileLista: false,
       isfileListb: false,
-      Registration: "", // 驾驶证编号
+      Registration1: "", // 驾驶证编号
       allow: "", // 准驾车型
       datetimer: "请选择",
       date: "",
@@ -143,22 +124,51 @@ export default {
       console.log(file);
     },
     formatDate(date) {
-      return `${date.getYear() + 1900}年${date.getMonth() + 1}月${date.getDate()}日`;
+      return `${date.getYear() + 1900}年${
+        date.getMonth() + 1
+        }月${date.getDate()}日`;
     },
     onConfirm(date) {
       this.show = false;
       this.date = this.formatDate(date);
       this.datetimer = this.formatDate(date);
     },
-    next: function () {
-      this.$router.replace("/examine/fourth");
+    // 上传证件照验证
+    showcertificates() {
+      this.show2 = false;
+      Notify({
+        type: "primary",
+        message: "再次点击即可上传"
+      });
+    },
+    next: function (Registration1, allow, datetimer, fileData1) {
+      if (Registration1 === "") {
+        Notify("驾驶证编号为必填项");
+      } else if (allow === "") {
+        Notify("请填写准驾车型");
+      } else if (datetimer === "") {
+        Notify("请填写初领驾驶证日期");
+      } else if (fileData1.fileLista == "") {
+        Notify("驾驶证照片正面识别失败，请重新上传");
+      } else if (fileData1.fileListb == "") {
+        Notify("驾驶证照片反面识别失败，请重新上传");
+      } else {
+        this.$router.replace("/examine/fourth");
+        let storage = window.sessionStorage;
+        let aa = JSON.parse(storage.Info);
+        aa.Registration1 = Registration1;
+        aa.allow = allow;
+        aa.datetimer = datetimer;
+        aa.fileData1 = fileData1;
+        sessionStorage.setItem("Info", JSON.stringify(aa));
+      }
       // activeIndex++;
     },
   },
 };
 </script>
 
-<style scoped lang="less">
+<style lang="less" scoped>
 .image {
   width: 90%;
   height: 128px;
@@ -166,23 +176,27 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+
   .uploadInfo {
     width: 100%;
     font-size: 16px;
     color: #333;
     background: #f0f0f0;
+
     .cell-title {
       border-bottom: 1px #f0f0f0 solid;
       line-height: 40px;
       padding: 0 20px;
       background: #fff;
     }
+
     .idCardbox {
       display: flex;
       justify-content: space-around;
       background: #fff;
       padding: 15px;
-      > div {
+
+      >div {
         position: relative;
         width: 165px;
         height: 81px;
@@ -191,6 +205,7 @@ export default {
         border-radius: 10px;
         margin: 0 5px;
         color: #fff;
+
         .van-uploader {
           position: absolute;
           z-index: 1;
@@ -200,12 +215,14 @@ export default {
           height: 81px;
           opacity: 0;
         }
-        > span {
+
+        >span {
           position: absolute;
           top: 15px;
           left: 65px;
           font-size: 30px;
         }
+
         p {
           position: absolute;
           top: 45px;
@@ -219,13 +236,84 @@ export default {
     }
   }
 }
+
 .license {
   padding: 10px;
+
+  .image {
+    width: 90%;
+    height: 128px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .uploadInfo {
+      width: 100%;
+      font-size: 16px;
+      color: #333;
+      background: #f0f0f0;
+
+      .cell-title {
+        border-bottom: 1px #f0f0f0 solid;
+        line-height: 40px;
+        padding: 0 20px;
+        background: #fff;
+      }
+
+      .idCardbox {
+        display: flex;
+        justify-content: space-around;
+        background: #fff;
+        padding: 15px;
+
+        >div {
+          position: relative;
+          width: 165px;
+          height: 81px;
+          background-color: #868686;
+          overflow: hidden;
+          border-radius: 10px;
+          margin: 0 5px;
+          color: #fff;
+
+          .van-uploader {
+            position: absolute;
+            z-index: 1;
+            top: 0;
+            left: 20px;
+            width: 165px;
+            height: 81px;
+            opacity: 0;
+          }
+
+          >span {
+            position: absolute;
+            top: 15px;
+            left: 65px;
+            font-size: 30px;
+          }
+
+          p {
+            position: absolute;
+            top: 45px;
+            left: 30px;
+            text-align: center;
+            line-height: 20px;
+            font-size: 12px;
+            margin: 0;
+          }
+        }
+      }
+    }
+  }
+
   p {
     font-size: 15px;
     text-align: left;
     margin: 0 20px;
   }
+
   .minput {
     position: relative;
     z-index: 1;
@@ -235,29 +323,35 @@ export default {
     line-height: 50px;
     border-bottom: 1px solid #eee;
     overflow: hidden;
-    > span {
+
+    >span {
       text-align: left;
       font-size: 15px;
       float: left;
     }
-    > input {
+
+    >input {
       height: 47px;
       border: none;
       text-align: right;
       float: right;
     }
   }
+
   .van-cell__title {
     text-align: left;
   }
+
   .next {
     margin-top: 38px;
+
     .van-button {
       margin-top: 12px;
       width: 345px;
       height: 45px;
     }
   }
+
   // 遮罩层
   .xu {
     position: absolute;
@@ -265,6 +359,7 @@ export default {
     // z-index: -1;
     width: 345px;
     height: 425px;
+
     .info {
       position: absolute;
       top: 0;
@@ -279,17 +374,21 @@ export default {
       border-radius: 5px;
       padding: 20px 10px 0;
       overflow: hidden;
+
       .top {
         width: 315px;
         background-color: #fff;
-        > img {
+
+        >img {
           width: 315px;
         }
       }
+
       .button {
         width: 100%;
         overflow: hidden;
-        > .van-button {
+
+        >.van-button {
           width: 100%;
           border: #fff;
           color: #68ceca;

@@ -1,120 +1,117 @@
 <template>
-  <div class="second">
-    <div class="minput">
-      <span>姓名</span>
-      <input v-model="username" type="text" placeholder="请输入姓名" />
-    </div>
-    <div class="minput">
-      <span>身份证号</span>
-      <input v-model="usernumber" type="number" placeholder="请输入身份证号" />
-    </div>
-    <div class="image">
-      <div class="uploadInfo">
-        <div class="cell">
-          <!-- <van-uploader :after-read="afterRead" accept="image/*" multiple/>
+<div class="second">
+  <div class="minput">
+    <span>姓名</span>
+    <input v-model="username" type="text" placeholder="请输入姓名" />
+  </div>
+  <div class="minput">
+    <span>身份证号</span>
+    <input v-model="usernumber" type="number" placeholder="请输入身份证号" />
+  </div>
+  <div class="image">
+    <div class="uploadInfo">
+      <div class="cell">
+        <!-- <van-uploader :after-read="afterRead" accept="image/*" multiple/>
           <img class="head-img" src="" ref="goodsImg"/>-->
-          <div class="idCardbox" @click.once.prevent="show2 = true">
-            <div>
-              <van-uploader
-                preview-size="100px"
-                :after-read="afterReada"
-                :before-delete="deletea"
-                v-model="fileData.fileLista"
-                multiple
-                :max-count="1"
-              />
-              <span>+</span>
-              <p>上传身份证正面</p>
-            </div>
-            <div>
-              <van-uploader
-                preview-size="100px"
-                :after-read="afterReadb"
-                :before-delete="deleteb"
-                v-model="fileData.fileListb"
-                multiple
-                :max-count="1"
-              />
-              <span>+</span>
-              <p>上传身份证反面</p>
-            </div>
+        <div class="idCardbox" @click.once.prevent="show2 = true">
+          <div>
+            <van-uploader preview-size="100px" :after-read="afterReada" :before-delete="deletea" v-model="fileData.fileLista" multiple :max-count="1" deletable />
+            <span>{{addfile}}</span>
+            <p>上传身份证正面</p>
+          </div>
+          <div>
+            <van-uploader preview-size="100px" :after-read="afterReadb" :before-delete="deleteb" v-model="fileData.fileListb" multiple :max-count="1" />
+            <span>+</span>
+            <p>上传身份证反面</p>
           </div>
         </div>
       </div>
     </div>
-    <van-cell
-      title="报名城市"
-      v-model="carmodel"
-      cancel-button-text
-      :style="{ height: '50px' }"
-      value
-      is-link
-      @click="showPopup"
-    ></van-cell>
-    <van-popup v-model="show" position="bottom" :style="{ height: '50%' }">
-      <van-cell-group>
-        <van-area
-          ref="area"
-          value="110000"
-          :area-list="areaList"
-          @change="onChange"
-          @confirm="show = false"
-          @cancel="show = false"
-        />
-      </van-cell-group>
-    </van-popup>
-    <div class="minput">
-      <span>紧急联系人姓名</span>
-      <input v-model="userurgent" type="text" placeholder="请输入姓名" />
-    </div>
-    <div class="minput">
-      <span>紧急联系人号码</span>
-      <input v-model="urgentnumber" type="number" placeholder="请输入号码" />
-    </div>
-    <!-- 紧急联系人关系选择 -->
-    <van-cell is-link title="联系人关系" v-model="action" @click="show1 = true"></van-cell>
-    <van-action-sheet v-model="show1" :actions="actions" @select="onSelect" close-on-click-action />
-    <div class="next">
-      <van-button type="primary" color="#67CDC9" size="large" @click="next">下一步</van-button>
-    </div>
+  </div>
+  <van-cell title="户籍地址" v-model="carmodel1" cancel-button-text :style="{ height: '50px' }" value is-link @click="showPopup"></van-cell>
+  <van-popup v-model="show" position="bottom" :style="{ height: '50%' }">
+    <van-cell-group>
+      <van-area ref="area" value="110000" :area-list="areaList" @change="onChange" @confirm="show = false" @cancel="show = false" :columns-placeholder="['请选择', '请选择', '请选择']" />
+    </van-cell-group>
+  </van-popup>
+  <div class="minput">
+    <span>紧急联系人姓名</span>
+    <input v-model="userurgent" type="text" placeholder="请输入姓名" />
+  </div>
+  <div class="minput">
+    <span>紧急联系人号码</span>
+    <input v-model="urgentnumber" type="number" placeholder="请输入号码" />
+  </div>
+  <!-- 紧急联系人关系选择 -->
+  <van-cell is-link title="联系人关系" v-model="action" @click="show1 = true"></van-cell>
+  <van-action-sheet v-model="show1" :actions="actions" @select="onSelect" close-on-click-action />
+  <div class="next">
+    <van-button type="primary" color="#67CDC9" size="large" @click="
+          next(
+            username,
+            usernumber,
+            userurgent,
+            urgentnumber,
+            carmodel1,
+            action,
+            fileData
+          )
+        ">下一步</van-button>
+  </div>
 
-    <!-- 证件拍摄需知 显示隐藏遮罩层 -->
-    <div class="xu">
-      <!-- <van-button type="primary" text="显示遮罩层" @click="show2 = true" /> -->
-      <van-overlay :show="show2" @click="show2 = false">
-        <div class="wrapper" @click.stop>
-          <div class="info">
-            <div class="top">
-              <img src="../../assets/images/zy2.png" alt />
-            </div>
-            <div class="button">
-              <van-button type="default" @click="show2=false">知道了</van-button>
-            </div>
+  <!-- 证件拍摄需知 显示隐藏遮罩层 -->
+  <div class="xu">
+    <!-- <van-button type="primary" text="显示遮罩层" @click="show2 = true" /> -->
+    <van-overlay :show="show2">
+      <div class="wrapper" @click.stop>
+        <div class="info">
+          <div class="top">
+            <img src="../../assets/images/zy2.png" alt />
+          </div>
+          <div class="button">
+            <van-button type="default" @click="showcertificates">知道了</van-button>
           </div>
         </div>
-      </van-overlay>
-    </div>
+      </div>
+    </van-overlay>
   </div>
+</div>
 </template>
 
 <script>
-import { API_USERINFO_INSET } from "../../api/api";
+import {
+  API_USERID
+} from "../../api/api";
 import areaList from "../../assets/js/area";
-import { Toast } from "vant";
+import {
+  Notify,
+  Toast
+} from "vant";
 export default {
   data() {
     return {
-      show: false, // 报名城市
+      show: false, // 户籍地址
       show1: false, // 紧急联系人
       show2: false, // 遮盖层
       username: "", // 姓名
       usernumber: "", // 身份证号
       userurgent: "", // 紧急联系人
       urgentnumber: "", // 紧急联系人号码
-      areaList, // 报名城市列表
-      carmodel: "请选择",
+      areaList, // 户籍地址列表
+      carmodel1: "请选择",
       action: "请选择",
-      actions: [{ name: "家人" }, { name: "朋友" }, { name: "其他" }],
+      addfile: "+", // 身份证正面是否上传 
+      addside: "+", // 身份证反面是否上传
+      actions: [{
+          name: "家人",
+        },
+        {
+          name: "朋友",
+        },
+        {
+          name: "其他",
+        },
+      ],
       fileData: {
         fileLista: [],
         fileListb: [],
@@ -142,7 +139,7 @@ export default {
       for (var i = 0; i < value.length; i++) {
         areaName = areaName + value[i].name + "";
       }
-      this.carmodel = areaName;
+      this.carmodel1 = areaName;
     },
     async onSelect(item) {
       // 默认情况下点击选项时不会自动收起
@@ -180,7 +177,7 @@ export default {
         let img = new Image();
         img.src = result;
         // console.log('********未压缩前的图片大小********')
-        // console.log(result.length / 1024)
+        console.log(result.length / 1024);
         img.onload = function () {
           let data = that.compress(img, 0.3);
           // data=data.split(",")
@@ -205,7 +202,9 @@ export default {
       while (n--) {
         ia[n] = bytes.charCodeAt(n);
       }
-      return new File([ia], fileName, { type: mime });
+      return new File([ia], fileName, {
+        type: mime,
+      });
     },
     //调用
 
@@ -235,7 +234,7 @@ export default {
       let data = new FormData();
       data.append("file", file);
       data.append("side", side);
-      this.$post(url, data).then((res) => {
+      API_USERID(url, data).then((res) => {
         console.log(res);
         _this.$toast(res.msg);
         if (res.code == "200") {
@@ -311,50 +310,79 @@ export default {
       // this.recognition('/applyvehicle/checkIdCard',file.file,'back')
       console.log(file);
     },
-    submitForm() {
-      if (!this.isfileLista) {
-        this.$toast("身份证正面有误，请重新上传");
-        return false;
-      }
-      if (!this.isfileListb) {
-        this.$toast("身份证反面有误，请重新上传");
-        return false;
-      }
-      if (!this.isfileListc) {
-        this.$toast("驾驶证正面有误，请重新上传");
-        return false;
-      }
-      if (!this.isfileListd) {
-        this.$toast("驾驶证反面有误，请重新上传");
-        return false;
-      }
-      if (this.idcardnum != this.drivingnum) {
-        this.$toast("身份证与驾驶证不一致，请重新上传");
-        return false;
-      }
-      sessionStorage.setItem("useridname", this.idcardname);
-      this.$router.go(-1);
+    showcertificates() {
+      this.show2 = false;
+      Notify({
+        type: "primary",
+        message: "再次点击即可上传",
+      });
+
     },
-    next: function () {
-      this.$router.replace("/examine/third");
-      // activeIndex++;
+    next: function (
+      username,
+      usernumber,
+      userurgent,
+      urgentnumber,
+      carmodel1,
+      action,
+      fileData
+    ) {
+      if (username === "") {
+        Notify("请正确输入名字");
+      } else if (usernumber === "") {
+        Notify("身份证号识别错误，请重新输入");
+      } else if (fileData.fileLista == "") {
+        Notify("身份证照片正面识别错误,请重新上传");
+      } else if (fileData.fileListb == "") {
+        Notify("身份证照片反面识别错误,请重新上传");
+      } else if (carmodel1 === "请选择") {
+        Notify("请选择户籍地址");
+      } else if (userurgent === "") {
+        Notify("紧急联系人信息不能为空");
+      } else if (urgentnumber === "") {
+        Notify("紧急联系人号码不能为空");
+      } else if (action === "请选择") {
+        Notify("请选择紧急联系人关系");
+      } else {
+        this.$router.replace("/examine/third");
+        let storage = window.sessionStorage;
+        let aa = JSON.parse(storage.Info);
+        aa.username = username;
+        aa.usernumber = usernumber;
+        aa.userurgent = userurgent;
+        aa.urgentnumber = urgentnumber;
+        aa.carmodel1 = carmodel1;
+        aa.action = action;
+        aa.fileData = fileData;
+        console.log(aa);
+        console.log(storage.Info);
+        console.log(storage);
+        sessionStorage.setItem("Info", JSON.stringify(aa));
+      }
     },
     async searchsome(options) {
-      let { username, usernumber, userurgent, urgentnumber } = options;
+      let {
+        username,
+        usernumber,
+        userurgent,
+        urgentnumber
+      } = options;
       let data = await API_AREA_ALL();
       // console.log(data);
       this.area = data.data;
       // console.log(this.area);
     },
   },
+  watch: {}
 };
 </script>
 
-<style scoped lang="less">
+<style lang="less" scoped>
 .van-field__body {
   // float: right;
   text-align: right;
 }
+
 .wrapper {
   display: flex;
   align-items: center;
@@ -367,6 +395,7 @@ export default {
   height: 120px;
   background-color: #fff;
 }
+
 .second {
   .minput {
     position: relative;
@@ -377,18 +406,21 @@ export default {
     line-height: 50px;
     border-bottom: 1px solid #eee;
     overflow: hidden;
-    > span {
+
+    >span {
       text-align: left;
       font-size: 15px;
       float: left;
     }
-    > input {
+
+    >input {
       height: 47px;
       border: none;
       text-align: right;
       float: right;
     }
   }
+
   .image {
     width: 90%;
     height: 128px;
@@ -396,45 +428,28 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    .loadingbox {
-      position: absolute;
-      top: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      width: 100%;
-      .loading {
-        width: 130px;
-        height: 130px;
-        background: rgba(0, 0, 0, 0.5);
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-      }
-      .van-loading__text {
-        color: #fff;
-      }
-    }
+
     .uploadInfo {
       width: 100%;
       font-size: 16px;
       color: #333;
       background: #f0f0f0;
+
       .cell-title {
         border-bottom: 1px #f0f0f0 solid;
         line-height: 40px;
         padding: 0 20px;
         background: #fff;
       }
+
       .idCardbox {
         display: flex;
+
         justify-content: space-around;
         background: #fff;
         padding: 15px;
-        > div {
+
+        >div {
           position: relative;
           width: 165px;
           height: 81px;
@@ -443,6 +458,7 @@ export default {
           border-radius: 10px;
           margin: 0 5px;
           color: #fff;
+
           .van-uploader {
             position: absolute;
             z-index: 1;
@@ -451,18 +467,29 @@ export default {
             width: 165px;
             height: 81px;
             opacity: 0;
-            .van-image_img{
+
+            .van-uploader__input {
+              background-color: rgba(0, 0, 0, 0) !important;
+            }
+
+            .van-image {
               width: 143px;
               height: 81px;
-              opacity: 1 !important;
+
+              .van-image__img {
+                width: 143px !important;
+                height: 81px !important;
+              }
             }
           }
-          > span {
+
+          >span {
             position: absolute;
             top: 15px;
             left: 65px;
             font-size: 30px;
           }
+
           p {
             position: absolute;
             top: 45px;
@@ -476,9 +503,11 @@ export default {
       }
     }
   }
+
   .van-cell__title {
     overflow: hidden;
-    > span {
+
+    >span {
       float: left;
       margin-left: 3px;
     }
@@ -486,6 +515,7 @@ export default {
 
   .next {
     margin-top: 38px;
+
     .van-button {
       margin-top: 12px;
       width: 345px;
@@ -493,6 +523,7 @@ export default {
     }
   }
 }
+
 // 遮罩层
 .xu {
   position: absolute;
@@ -500,23 +531,28 @@ export default {
   // z-index: -1;
   width: 300px;
   height: 425px;
+
   .info {
     box-sizing: border-box;
     width: 345px;
     background-color: #fff;
     border-radius: 5px;
     padding: 20px 10px 0;
+
     .top {
       width: 315px;
       background-color: #fff;
-      > img {
+
+      >img {
         width: 315px;
       }
     }
+
     .button {
       width: 100%;
       overflow: hidden;
-      > .van-button {
+
+      >.van-button {
         width: 100%;
         border: #fff;
         color: #68ceca;

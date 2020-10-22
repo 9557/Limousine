@@ -1,7 +1,7 @@
 <template>
-  <div id="app">
-    <router-view/>
-  </div>
+<div id="app">
+  <router-view />
+</div>
 </template>
 
 <style lang="less">
@@ -25,5 +25,9 @@
       color: #42b983;
     }
   }
+}
+
+::-webkit-scrollbar {
+  display: none !important;
 }
 </style>

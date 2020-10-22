@@ -18,6 +18,8 @@ import allorder from '../components/index/orderlist/allorder.vue'
 // import stillorder from '../components/index/orderlist/stillorder.vue'
 // 个人中心
 import owninfo from '../components/index/owninfo/owninfo.vue'
+import Protocol from '../views/protocol.vue'
+import Qrcode from '../views/erweima.vue'
 
 Vue.use(VueRouter)
 
@@ -25,8 +27,9 @@ const routes = [
   {
     // 输入错误路由重定向到登陆页面
     path: '*',
-    redirect: '/index/owninfo'
-  },/*  {
+    redirect: '/index/owninfo',
+  },
+  /*  {
     // 登录页面路由
     // path: '/login',
     // name: 'Login',
@@ -34,29 +37,29 @@ const routes = [
   }, */ {
     // 首页路由
     path: '/index',
-    component:Index,
-    redirect:'/index/owninfo',
+    component: Index,
+    redirect: '/index/owninfo',
     children: [
       {
         // 任务页面路由
         path: '/index/newtask',
         name: 'newtask',
-        component: newtask
-      }
-      ,
+        component: newtask,
+      },
       {
         // 订单页面路由
         path: '/index/order',
         name: 'order',
-        component: allorder
+        component: allorder,
       },
       {
         path: '/index/owninfo',
         name: 'owninfo',
-        component: owninfo
-      }
-    ]
-  }, {
+        component: owninfo,
+      },
+    ],
+  },
+  {
     path: '/examine',
     name: 'Examine',
     component: Examine,
@@ -65,28 +68,41 @@ const routes = [
       {
         path: '/examine/first',
         name: 'first',
-        component: first
-      }, {
+        component: first,
+      },
+      {
         path: '/examine/second',
         name: 'second',
-        component: second
-      }, {
+        component: second,
+      },
+      {
         path: '/examine/third',
         name: 'third',
-        component: third
-      }, {
+        component: third,
+      },
+      {
         path: '/examine/fourth',
         name: 'fourth',
-        component: fourth
-      }
-    ]
-  }
+        component: fourth,
+      },
+    ],
+  },
+  {
+    path: '/protocol',
+    name: Protocol,
+    component: Protocol,
+  },
+  {
+    path: '/qrcode',
+    name: Qrcode,
+    component: Qrcode,
+  },
 ]
 
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes
+  routes,
 })
 
 export default router
